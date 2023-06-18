@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  tabski-service:
+    build:
+      context: .
+    ports:
+      - "4000:4000"
+    volumes:
+      - "./src:/src"
+    command: "npm run start"
+    depends_on:
+      - db
+  db:
+    image: postgres:15.3-alpine
+    restart: 'no'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - APP_DB_USER=tabski
+      - APP_DB_PASS=tabski
+      - APP_DB_NAME=tabski
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./db-init-script:/docker-entrypoint-initdb.d/
+
+volumes:
+  db:
+    driver: local
