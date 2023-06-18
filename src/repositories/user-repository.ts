@@ -7,7 +7,11 @@ export abstract class IUserRepository {
 
     abstract getUserByEmail(email: string): Promise<User | null>;
 
+    abstract getUserById(id: number): Promise<User | null>;
+
     abstract saveUser(user: User): Promise<User>;
+
+    abstract deleteUser(user: User): Promise<void>;
 }
 
 @Service()
@@ -16,6 +20,14 @@ export class UserRepository implements IUserRepository {
 
     constructor() {
         this.repository = Container.get(DataSource).getRepository(User);
+    }
+
+    public async getUserById(id: number): Promise<User | null> {
+        return await this.repository.findOne({
+            where: {
+                id: id
+            }
+        });
     }
 
     public async listUsers(page: number, pageSize: number): Promise<[User[], number]> {
@@ -35,5 +47,9 @@ export class UserRepository implements IUserRepository {
 
     public async saveUser(user: User): Promise<User> {
         return await this.repository.save(user);
+    }
+
+    public async deleteUser(user: User): Promise<void> {
+        await this.repository.remove(user);
     }
 }

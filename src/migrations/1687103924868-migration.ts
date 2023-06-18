@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Migration1687082148250 implements MigrationInterface {
-    name = 'Migration1687082148250';
+export class Migration1687103924868 implements MigrationInterface {
+    name = 'Migration1687103924868';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
@@ -17,7 +17,7 @@ export class Migration1687082148250 implements MigrationInterface {
         `);
         await queryRunner.query(`
             ALTER TABLE "posts"
-            ADD CONSTRAINT "FK_c5a322ad12a7bf95460c958e80e" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+            ADD CONSTRAINT "FK_c5a322ad12a7bf95460c958e80e" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
     }
 

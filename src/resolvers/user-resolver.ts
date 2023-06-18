@@ -1,8 +1,8 @@
-import { Resolver, Query, Mutation, Arg, Int } from 'type-graphql';
+import { Resolver, Query, Mutation, Arg, Int, ID } from 'type-graphql';
 import User from '../entities/user-entity';
 import { IUserService } from '../services/user-service';
 import { Service } from 'typedi';
-import { UserCreateInput } from '../inputs/user-input';
+import { UserCreateInput, UserUpdateInput } from '../inputs/user-input';
 import { LogResolverCalled } from '../misc/logger';
 import { PaginatedUserResponse } from '../dtos/common';
 
@@ -15,6 +15,18 @@ export default class UserResolver {
     @LogResolverCalled
     async userCreate(@Arg('userCreate') userCreate: UserCreateInput): Promise<User> {
         return await this.userService.createUser(userCreate);
+    }
+
+    @Mutation(() => User)
+    @LogResolverCalled
+    async userUpdate(@Arg('userUpdate') userUpdate: UserUpdateInput): Promise<User> {
+        return await this.userService.updateUser(userUpdate);
+    }
+
+    @Mutation(() => String)
+    @LogResolverCalled
+    async userDelete(@Arg('userId', () => ID) userId?: number): Promise<string> {
+        return await this.userService.deleteUser(Number(userId));
     }
 
     @Query(() => PaginatedUserResponse)
