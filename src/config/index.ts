@@ -6,6 +6,8 @@ import path from 'path';
 import { Container } from 'typedi';
 import { IUserRepository, UserRepository } from '../repositories/user-repository';
 import { IUserService, UserService } from '../services/user-service';
+import { IPostRepository, PostRepository } from '../repositories/post-repository';
+import { IPostService, PostService } from '../services/post-service';
 
 // Database configuration
 export let db: DataSource;
@@ -63,5 +65,8 @@ export class DBConnection {
     Container.set(DataSource, db);
 
     Container.set(IUserRepository, Container.get(UserRepository));
+    Container.set(IPostRepository, Container.get(PostRepository));
+
     Container.set(IUserService, Container.get(UserService));
+    Container.set(IPostService, Container.get(PostService));
 })();

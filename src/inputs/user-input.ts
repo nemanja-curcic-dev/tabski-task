@@ -1,5 +1,5 @@
 import { Field, InputType, ID } from 'type-graphql';
-import { IsEmail, Length, IsStrongPassword } from 'class-validator';
+import { IsEmail, Length, IsStrongPassword, IsNotEmpty } from 'class-validator';
 
 @InputType()
 export class UserBaseInput {
@@ -62,5 +62,6 @@ export class UserUpdateInput extends UserBaseInput {
         nullable: false,
         description: 'ID of a user being updated.'
     })
-    id: string;
+    @IsNotEmpty()
+    id: number;
 }

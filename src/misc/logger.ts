@@ -27,11 +27,12 @@ export const logger = winston.createLogger({
     ],
 });
 
-export function LogResolverCalled(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+export function LogMethodCalled(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
     descriptor.value = function (...args: any[]) {
-        logger.debug(`---------- ${propertyKey} resolver called ----------`);
+        const className = target.constructor.name;
+        logger.debug(`---------- ${className}.${propertyKey} called ----------`);
         return originalMethod.apply(this, args);
     };
 

@@ -1,12 +1,11 @@
 import User from '../entities/user-entity';
-import { GraphQLError } from 'graphql';
-import { ApolloServerErrorCode } from '@apollo/server/errors';
 import { Service } from 'typedi';
 import { UserCreateInput, UserUpdateInput } from '../inputs/user-input';
 import { IUserRepository } from '../repositories/user-repository';
 import { Transactional, Propagation } from 'typeorm-transactional';
 import { PaginatedUserResponse } from '../dtos/common';
 import bcrypt from 'bcrypt';
+import { BaseService } from './base-service';
 
 export abstract class IUserService {
     abstract createUser(userCreate: UserCreateInput): Promise<User>;
@@ -19,8 +18,10 @@ export abstract class IUserService {
 }
 
 @Service()
-export class UserService implements IUserService {
-    constructor(private userRepository: IUserRepository) {}
+export class UserService extends BaseService implements IUserService {
+    constructor(private userRepository: IUserRepository) {
+        super();
+    }
 
     @Transactional({ propagation: Propagation.REQUIRED })
     public async createUser(userCreate: UserCreateInput): Promise<User> {
@@ -28,20 +29,12 @@ export class UserService implements IUserService {
         const userWithSameEmail = await this.userRepository.getUserByEmail(userCreate.email);
 
         if (userWithSameEmail) {
-            throw new GraphQLError(`User with email ${userCreate.email} already exists!`, {
-                extensions: {
-                    code: ApolloServerErrorCode.BAD_REQUEST,
-                },
-            });
+            throw this.logAndGetError(`User with email ${userCreate.email} already exists!`);
         }
 
         // check if passwords match
         if (userCreate.password !== userCreate.passwordConfirm) {
-            throw new GraphQLError('Passwords do not match!', {
-                extensions: {
-                    code: ApolloServerErrorCode.BAD_REQUEST,
-                },
-            });
+            throw this.logAndGetError('Passwords do not match!');
         }
 
         // create password hash
@@ -59,14 +52,10 @@ export class UserService implements IUserService {
 
     @Transactional({ propagation: Propagation.REQUIRED })
     public async updateUser(userUpdate: UserUpdateInput): Promise<User> {
-        const user = await this.userRepository.getUserById(Number(userUpdate.id));
+        const user = await this.userRepository.getUserById(userUpdate.id);
 
         if (!user) {
-            throw new GraphQLError(`User ${userUpdate.id} does not exist!`, {
-                extensions: {
-                    code: ApolloServerErrorCode.BAD_REQUEST,
-                },
-            });
+            throw this.logAndGetError(`User ${userUpdate.id} does not exist!`);
         }
 
         // check if email is changed and if the same one exists
@@ -74,11 +63,7 @@ export class UserService implements IUserService {
             const userWithSameEmail = await this.userRepository.getUserByEmail(userUpdate.email);
 
             if (userWithSameEmail) {
-                throw new GraphQLError(`User with email ${userUpdate.email} already exists!`, {
-                    extensions: {
-                        code: ApolloServerErrorCode.BAD_REQUEST,
-                    },
-                });
+                throw this.logAndGetError(`User with email ${userUpdate.email} already exists!`);
             }
         }
 
@@ -105,11 +90,7 @@ export class UserService implements IUserService {
         const user = await this.userRepository.getUserById(userId);
 
         if (!user) {
-            throw new GraphQLError(`User ${userId} does not exist!`, {
-                extensions: {
-                    code: ApolloServerErrorCode.BAD_REQUEST,
-                },
-            });
+            throw this.logAndGetError(`User ${userId} does not exist!`);
         }
 
         await this.userRepository.deleteUser(user);

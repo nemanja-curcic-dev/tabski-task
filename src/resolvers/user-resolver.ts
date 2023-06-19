@@ -3,7 +3,7 @@ import User from '../entities/user-entity';
 import { IUserService } from '../services/user-service';
 import { Service } from 'typedi';
 import { UserCreateInput, UserUpdateInput } from '../inputs/user-input';
-import { LogResolverCalled } from '../misc/logger';
+import { LogMethodCalled } from '../misc/logger';
 import { PaginatedUserResponse } from '../dtos/common';
 
 @Resolver()
@@ -12,25 +12,25 @@ export default class UserResolver {
     constructor(private userService: IUserService) {}
 
     @Mutation(() => User)
-    @LogResolverCalled
+    @LogMethodCalled
     async userCreate(@Arg('userCreate') userCreate: UserCreateInput): Promise<User> {
         return await this.userService.createUser(userCreate);
     }
 
     @Mutation(() => User)
-    @LogResolverCalled
+    @LogMethodCalled
     async userUpdate(@Arg('userUpdate') userUpdate: UserUpdateInput): Promise<User> {
         return await this.userService.updateUser(userUpdate);
     }
 
     @Mutation(() => String)
-    @LogResolverCalled
-    async userDelete(@Arg('userId', () => ID) userId?: number): Promise<string> {
-        return await this.userService.deleteUser(Number(userId));
+    @LogMethodCalled
+    async userDelete(@Arg('userId', () => ID) userId: number): Promise<string> {
+        return await this.userService.deleteUser(userId);
     }
 
     @Query(() => PaginatedUserResponse)
-    @LogResolverCalled
+    @LogMethodCalled
     async users(
         @Arg('page', () => Int, { nullable: true }) page?: number,
         @Arg('pageSize', () => Int, { nullable: true }) pageSize?: number
