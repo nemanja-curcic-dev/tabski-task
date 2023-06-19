@@ -25,6 +25,16 @@ if (!Envs.TESTING) {
     const pg = require('pg-mem');
     const pgMem = pg.newDb();
 
+    pgMem.public.registerFunction({
+        implementation: () => 'test',
+        name: 'current_database',
+    });
+
+    pgMem.public.registerFunction({
+        implementation: () => 'test',
+        name: 'version',
+    });
+
     db = pgMem.adapters.createTypeormDataSource({
         type: 'postgres',
         url: Envs.DATABASE_URL,
