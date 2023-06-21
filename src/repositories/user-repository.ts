@@ -1,7 +1,7 @@
 import { Repository, DataSource } from 'typeorm';
 import User from '../entities/user-entity';
 import { Service, Container } from 'typedi';
-import { LogMethodCalled } from '../misc/logger';
+import { LogMethodCalled, logger } from '../misc/logger';
 
 export abstract class IUserRepository {
     abstract listUsers(page: number, pageSize: number): Promise<[User[], number]>;
@@ -25,6 +25,7 @@ export class UserRepository implements IUserRepository {
 
     @LogMethodCalled
     public async getUserById(id: number): Promise<User | null> {
+        logger.debug(`Getting user by id ${id}...`);
         return await this.repository.findOne({
             where: {
                 id: id,
@@ -34,6 +35,7 @@ export class UserRepository implements IUserRepository {
 
     @LogMethodCalled
     public async listUsers(page: number, pageSize: number): Promise<[User[], number]> {
+        logger.debug(`Listing users - page: ${page}, pageSize: ${pageSize}...`);
         return await this.repository.findAndCount({
             skip: (page - 1) * pageSize,
             take: pageSize,
@@ -42,6 +44,7 @@ export class UserRepository implements IUserRepository {
 
     @LogMethodCalled
     public async getUserByEmail(email: string): Promise<User | null> {
+        logger.debug(`Getting user by email: ${email}...`);
         return await this.repository.findOne({
             where: {
                 email: email,
@@ -51,6 +54,7 @@ export class UserRepository implements IUserRepository {
 
     @LogMethodCalled
     public async saveUser(user: User): Promise<User> {
+        logger.debug(`Saving user with email: ${user.email}...`);
         return await this.repository.save(user);
     }
 

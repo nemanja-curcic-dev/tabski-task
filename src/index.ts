@@ -9,6 +9,7 @@ import { json } from 'body-parser';
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
+import { createContext } from './services/post-service';
 
 let dbConnection: DBConnection;
 
@@ -34,11 +35,15 @@ const main = async (): Promise<void> => {
         const server = new ApolloServer({
             schema: await createSchema(),
             csrfPrevention: true,
-            formatError: FormatError
+            formatError: FormatError,
         });
         await server.start();
 
-        app.use('/graphql', cors<cors.CorsRequest>(), json(), expressMiddleware(server));
+        app.use('/graphql', cors<cors.CorsRequest>(), json(), expressMiddleware(server, {
+            context: async ({ req }) => {
+                return createContext();
+            }
+        }));
 
         await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
         logger.debug('App listening on port 4000');

@@ -36,6 +36,7 @@
     "body-parser": "1.20.2",
     "class-validator": "0.14.0",
     "cors": "2.8.5",
+    "dataloader": "2.2.2",
     "graphql": "16.6.0",
     "reflect-metadata": "0.1.13",
     "type-graphql": "2.0.0-beta.2",

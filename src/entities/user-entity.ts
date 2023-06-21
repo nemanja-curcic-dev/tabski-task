@@ -29,8 +29,11 @@ export default class User {
     })
     password: string;
 
+    @Field(() => [Post], {
+        nullable: true
+    })
     @OneToMany(() => Post, (post) => post.author)
-    posts: Post[];
+    posts?: Post[];
 
     @Field(() => Date)
     @CreateDateColumn()
