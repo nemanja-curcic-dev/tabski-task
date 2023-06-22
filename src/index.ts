@@ -9,7 +9,8 @@ import { json } from 'body-parser';
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
-import { createContext } from './services/post-service';
+import { ContextService, CustomContext } from './services/context-service';
+import { Container } from 'typedi';
 
 let dbConnection: DBConnection;
 
@@ -32,18 +33,25 @@ const main = async (): Promise<void> => {
 
         const app = express();
         const httpServer = http.createServer(app);
-        const server = new ApolloServer({
+        const server = new ApolloServer<CustomContext>({
             schema: await createSchema(),
             csrfPrevention: true,
             formatError: FormatError,
         });
         await server.start();
 
-        app.use('/graphql', cors<cors.CorsRequest>(), json(), expressMiddleware(server, {
-            context: async ({ req }) => {
-                return createContext();
-            }
-        }));
+        app.use(
+            '/graphql',
+            cors<cors.CorsRequest>(),
+            json(),
+            expressMiddleware(server, {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                context: async ({ req }) => {
+                    const contextService = Container.get(ContextService);
+                    return contextService.createContext();
+                },
+            })
+        );
 
         await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
         logger.debug('App listening on port 4000');

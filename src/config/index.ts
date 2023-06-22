@@ -8,6 +8,7 @@ import { IUserRepository, UserRepository } from '../repositories/user-repository
 import { IUserService, UserService } from '../services/user-service';
 import { IPostRepository, PostRepository } from '../repositories/post-repository';
 import { IPostService, PostService } from '../services/post-service';
+import { IContextService, ContextService } from '../services/context-service';
 
 // Database configuration
 export let db: DataSource;
@@ -79,4 +80,5 @@ export class DBConnection {
 
     Container.set(IUserService, Container.get(UserService));
     Container.set(IPostService, Container.get(PostService));
+    Container.set(IContextService, Container.get(ContextService));
 })();

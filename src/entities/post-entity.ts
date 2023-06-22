@@ -23,6 +23,7 @@ export default class Post {
     })
     content: string;
 
+    @Field(() => User)
     @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
     author: User;
 

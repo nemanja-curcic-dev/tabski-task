@@ -1,15 +1,18 @@
-import { Resolver, Query, Mutation, Arg, Int, ID } from 'type-graphql';
+import { Resolver, Query, Mutation, Arg, Int, ID, FieldResolver, Root, Ctx } from 'type-graphql';
 import Post from '../entities/post-entity';
 import { IPostService } from '../services/post-service';
 import { Service } from 'typedi';
 import { PostCreateInput, PostUpdateInput } from '../inputs/post-input';
 import { LogMethodCalled } from '../misc/logger';
 import { PaginatedPostResponse } from '../dtos/common';
+import User from '../entities/user-entity';
+import { UserRepository } from '../repositories/user-repository';
+import { CustomContext } from '../services/context-service';
 
-@Resolver()
+@Resolver(Post)
 @Service()
 export default class PostResolver {
-    constructor(private postService: IPostService) {}
+    constructor(private postService: IPostService, private userRepository: UserRepository) {}
 
     @Mutation(() => Post)
     @LogMethodCalled
@@ -36,5 +39,10 @@ export default class PostResolver {
         @Arg('pageSize', () => Int, { nullable: true }) pageSize?: number
     ): Promise<PaginatedPostResponse> {
         return await this.postService.list(page || 1, pageSize || 10);
+    }
+
+    @FieldResolver(() => User)
+    async author(@Root() post: Post, @Ctx() context: CustomContext): Promise<User> {
+        return context.loaders.userLoader.load(post.id);
     }
 }

@@ -2,40 +2,10 @@ import { Service } from 'typedi';
 import { PostCreateInput, PostUpdateInput } from '../inputs/post-input';
 import { PaginatedPostResponse } from '../dtos/common';
 import Post from '../entities/post-entity';
-import { IPostRepository, PostRepository } from '../repositories/post-repository';
+import { IPostRepository } from '../repositories/post-repository';
 import { IUserRepository } from '../repositories/user-repository';
 import { Transactional, Propagation } from 'typeorm-transactional';
 import { BaseService } from './base-service';
-import DataLoader, { BatchLoadFn } from 'dataloader';
-
-const batchFn: BatchLoadFn<number, Post[]> = async (authorIds) => {
-    // Fetch the posts for the given author IDs
-    const postRepository = new PostRepository();
-    const posts = await postRepository.listPostsByAuthorIds(authorIds as number[]);
-
-    // Group the posts by author ID
-    const postsByAuthor: { [key: number]: Post[] } = {};
-    posts.forEach((post) => {
-        if (postsByAuthor[post.author.id]) {
-            postsByAuthor[post.author.id].push(post);
-        } else {
-            postsByAuthor[post.author.id] = [post];
-        }
-    });
-
-    // Return the posts in the same order as the author IDs
-    return authorIds.map((authorId) => postsByAuthor[authorId] || []);
-};
-
-export function createContext() {
-    const postLoader = new DataLoader(batchFn);
-
-    return {
-        loaders: {
-            postLoader
-        }
-    };
-}
 
 export abstract class IPostService {
     abstract createPost(postCreate: PostCreateInput): Promise<Post>;

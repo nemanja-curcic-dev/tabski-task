@@ -6,6 +6,7 @@ import { UserCreateInput, UserUpdateInput } from '../inputs/user-input';
 import { LogMethodCalled } from '../misc/logger';
 import { PaginatedUserResponse } from '../dtos/common';
 import Post from '../entities/post-entity';
+import { CustomContext } from '../services/context-service';
 
 @Resolver(User)
 @Service()
@@ -40,7 +41,7 @@ export default class UserResolver {
     }
 
     @FieldResolver(() => [Post])
-    async posts(@Root() user: User, @Ctx() context: any): Promise<Post[]> {
+    async posts(@Root() user: User, @Ctx() context: CustomContext): Promise<Post[]> {
         return context.loaders.postLoader.load(user.id);
     }
 }

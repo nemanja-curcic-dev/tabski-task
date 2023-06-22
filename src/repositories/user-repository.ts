@@ -1,4 +1,4 @@
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, In } from 'typeorm';
 import User from '../entities/user-entity';
 import { Service, Container } from 'typedi';
 import { LogMethodCalled, logger } from '../misc/logger';
@@ -13,6 +13,8 @@ export abstract class IUserRepository {
     abstract saveUser(user: User): Promise<User>;
 
     abstract deleteUser(user: User): Promise<void>;
+
+    abstract listUsersByPostIds(ids: number[]): Promise<User[]>;
 }
 
 @Service()
@@ -60,6 +62,22 @@ export class UserRepository implements IUserRepository {
 
     @LogMethodCalled
     public async deleteUser(user: User): Promise<void> {
+        logger.debug(`Deleting user ${user.email}...`);
         await this.repository.remove(user);
+    }
+
+    @LogMethodCalled
+    public async  listUsersByPostIds(ids: number[]): Promise<User[]> {
+        logger.debug(`Listing users by post ids: ${JSON.stringify(ids)}`);
+        const result = await this.repository.find({
+            where: {
+                posts: {
+                    id: In (ids)
+                }
+            },
+            relations: ['posts']
+        });
+
+        return result;
     }
 }
