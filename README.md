@@ -5,6 +5,7 @@
 
 ## Set up and running
 ### Prerequisites
+* Recommended Node v16.16.0 and above
 * git - for cloning the repository
 * Docker
 * Docker Compose
@@ -26,6 +27,7 @@
 `npm install`
 * Run command
 `npm run test`
+* Be sure to run Node version v16.16.0 and above (for previous ones it may not work)
 
 ### Accessing the API
 * The api can be accessed on http://localhost:4000/graphql
