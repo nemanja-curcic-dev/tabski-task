@@ -41,6 +41,15 @@ export default class PostResolver {
         return await this.postService.list(page || 1, pageSize || 10);
     }
 
+    @Mutation(() => Post)
+    @LogMethodCalled
+    async postLike(
+        @Arg('userId', () => ID) userId: number,
+        @Arg('postId', () => ID) postId: number
+    ): Promise<Post> {
+        return await this.postService.likePost(userId, postId);
+    }
+
     @FieldResolver(() => User)
     async author(@Root() post: Post, @Ctx() context: CustomContext): Promise<User> {
         return context.loaders.userLoader.load(post.id);

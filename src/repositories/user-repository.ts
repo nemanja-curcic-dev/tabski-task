@@ -8,7 +8,7 @@ export abstract class IUserRepository {
 
     abstract getUserByEmail(email: string): Promise<User | null>;
 
-    abstract getUserById(id: number): Promise<User | null>;
+    abstract getUserById(id: number, relations? : string[]): Promise<User | null>;
 
     abstract saveUser(user: User): Promise<User>;
 
@@ -26,12 +26,13 @@ export class UserRepository implements IUserRepository {
     }
 
     @LogMethodCalled
-    public async getUserById(id: number): Promise<User | null> {
+    public async getUserById(id: number, relations?: string[]): Promise<User | null> {
         logger.debug(`Getting user by id ${id}...`);
         return await this.repository.findOne({
             where: {
                 id: id,
             },
+            relations: relations ? relations : []
         });
     }
 

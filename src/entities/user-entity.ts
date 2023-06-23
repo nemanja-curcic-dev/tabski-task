@@ -1,4 +1,4 @@
-import { CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, Column, Entity, OneToMany } from 'typeorm';
+import { CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, Column, Entity, OneToMany, ManyToMany } from 'typeorm';
 import { ObjectType, Field, ID } from 'type-graphql';
 import Post from './post-entity';
 
@@ -34,6 +34,9 @@ export default class User {
     })
     @OneToMany(() => Post, (post) => post.author)
     posts?: Post[];
+
+    @ManyToMany(() => Post, (post) => post.likes)
+    likes: Post[];
 
     @Field(() => Date)
     @CreateDateColumn()

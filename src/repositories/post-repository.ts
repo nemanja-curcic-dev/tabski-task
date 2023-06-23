@@ -8,7 +8,7 @@ export abstract class IPostRepository {
 
     abstract savePost(post: Post): Promise<Post>;
 
-    abstract getPostById(id: number): Promise<Post | null>;
+    abstract getPostById(id: number, relations?: string[]): Promise<Post | null>;
 
     abstract deletePost(post: Post): Promise<void>;
 
@@ -30,12 +30,13 @@ export class PostRepository implements IPostRepository {
     }
 
     @LogMethodCalled
-    public async getPostById(id: number): Promise<Post | null> {
+    public async getPostById(id: number, relations?: string[]): Promise<Post | null> {
         logger.debug(`Getting post with id ${id}...`);
         return await this.repository.findOne({
             where: {
                 id: id,
             },
+            relations: relations ? relations : []
         });
     }
 
