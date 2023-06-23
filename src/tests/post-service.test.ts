@@ -1,14 +1,12 @@
 import { beforeAll, afterAll, afterEach, describe, it } from '@jest/globals';
 import { db } from '../config';
 import { Container } from 'typedi';
-import { UserService } from '../services/user-service';
 import { PostService } from '../services/post-service';
 import User from '../entities/user-entity';
 import Post from '../entities/post-entity';
 import { createUser, createPost } from './utils';
 import { expect } from 'chai';
 
-const userService = Container.get(UserService);
 const postService = Container.get(PostService);
 
 const userRepository = db.getRepository(User);

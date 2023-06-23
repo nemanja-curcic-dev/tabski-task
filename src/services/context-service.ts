@@ -36,7 +36,6 @@ export class ContextService implements IContextService {
 
         // Return the posts in the same order as the author IDs
         const result = authorIds.map((authorId) => postsByAuthor[authorId] || []);
-        console.log(result);
         return result;
     };
 
