@@ -32,7 +32,7 @@ describe('Test suite for post service', () => {
                 content: 'Content'
             });
         } catch (e) {
-            console.log(`User with id ${notExistingAuthorId} does not exist!`);
+            expect(e.message).to.be.equal(`User with id ${notExistingAuthorId} does not exists!`);
         }
     });
 
