@@ -11,6 +11,7 @@ import http from 'http';
 import cors from 'cors';
 import { ContextService, CustomContext } from './services/context-service';
 import { Container } from 'typedi';
+import { Envs } from './config/envs';
 
 let dbConnection: DBConnection;
 
@@ -53,8 +54,8 @@ const main = async (): Promise<void> => {
             })
         );
 
-        await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
-        logger.debug('App listening on port 4000');
+        await new Promise<void>((resolve) => httpServer.listen({ port: Envs.HTTP_PORT }, resolve));
+        logger.debug(`App listening on port ${Envs.HTTP_PORT}`);
     } catch (e) {
         logger.error(e.message);
         process.exit(1);
